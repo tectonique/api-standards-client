@@ -11,6 +11,9 @@
 
 # 0.x.y
 
+## 0.0.2
+- Published dist/ build.y
+
 ## 0.0.1
 - Initial release.
 - Axios type safety wrapper.
