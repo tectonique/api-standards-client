@@ -1,11 +1,10 @@
 import { AxiosInstance, AxiosResponse } from "axios";
 import { TypableApiMethodOptions } from "./types";
 import { ProblemDetails, ResponseEnvelopes } from "@tectonique/api-standards";
-import {
-  ClientProblemDetailSuperType,
-  ClientSideInternalProblemDetail,
-  ResponseNotAnEnvelopeProblemDetail,
-} from "./ClientProblemDetails";
+import { ClientProblemDetailsCollection } from "../ClientProblemDetails";
+
+const { ClientSideInternalProblemDetail, ResponseNotAnEnvelopeProblemDetail } =
+  ClientProblemDetailsCollection;
 
 function handleAxiosResponse<
   PROBLEM_DETAIL extends ProblemDetails.ProblemDetail<STATUS, TYPE, PAYLOAD>,
