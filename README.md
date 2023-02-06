@@ -80,9 +80,8 @@ An example:
 Here is an example:
 ```typescript
 import axios from "axios";
-import makeAxiosTypeSafe from "./axios/functions";
 import { ProblemDetailSuperType } from "@backend/ProblemDetailSuperType"
-import { ClientProblemDetailSuperType } from "@tectonique/api-standards-client";
+import { makeAxiosTypeSafe, ClientProblemDetailSuperType } from "@tectonique/api-standards-client";
 
 type Create_User_Body = {
   email: string;

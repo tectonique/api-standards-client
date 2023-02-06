@@ -16,7 +16,7 @@
     "name": "Peter Kuhmann",
     "email": "peter@hedgehogs-mind.com"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publishConfig": {
     "access": "public"
   },
@@ -54,5 +54,13 @@
   },
   "dependencies": {
     "@tectonique/api-standards": "^0.0.13"
+  },
+  "peerDependencies": {
+    "axios": ">= 1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "axios": {
+      "optional": false
+    }
   }
 }
