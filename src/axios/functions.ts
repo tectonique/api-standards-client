@@ -85,10 +85,8 @@ export function createTypedAxiosVerbs<
     get: <RESPONSE, QUERY>(
       url: string,
       options?: TypableApiMethodOptions<QUERY>
-    ): Promise<
-      ResponseEnvelopes.Envelope<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>
-    > => {
-      return handleAxiosResponse<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>(
+    ): Promise<ResponseEnvelopes.SuccessEnvelope<RESPONSE>> => {
+      return handleAxiosResponse<RESPONSE>(
         axios.get<RESPONSE>(url, {
           ...options?.config,
           params: options?.query,
@@ -100,10 +98,8 @@ export function createTypedAxiosVerbs<
       url: string,
       body: BODY,
       options?: TypableApiMethodOptions<QUERY>
-    ): Promise<
-      ResponseEnvelopes.Envelope<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>
-    > => {
-      return handleAxiosResponse<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>(
+    ): Promise<ResponseEnvelopes.SuccessEnvelope<RESPONSE>> => {
+      return handleAxiosResponse<RESPONSE>(
         axios.post<RESPONSE>(url, body, {
           ...options?.config,
           params: options?.query,
@@ -115,10 +111,8 @@ export function createTypedAxiosVerbs<
       url: string,
       body: BODY,
       options?: TypableApiMethodOptions<QUERY>
-    ): Promise<
-      ResponseEnvelopes.Envelope<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>
-    > => {
-      return handleAxiosResponse<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>(
+    ): Promise<ResponseEnvelopes.SuccessEnvelope<RESPONSE>> => {
+      return handleAxiosResponse<RESPONSE>(
         axios.put<RESPONSE>(url, body, {
           ...options?.config,
           params: options?.query,
@@ -130,10 +124,8 @@ export function createTypedAxiosVerbs<
       url: string,
       body: BODY,
       options?: TypableApiMethodOptions<QUERY>
-    ): Promise<
-      ResponseEnvelopes.Envelope<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>
-    > => {
-      return handleAxiosResponse<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>(
+    ): Promise<ResponseEnvelopes.SuccessEnvelope<RESPONSE>> => {
+      return handleAxiosResponse<RESPONSE>(
         axios.patch<RESPONSE>(url, body, {
           ...options?.config,
           params: options?.query,
@@ -144,10 +136,8 @@ export function createTypedAxiosVerbs<
     delete: <RESPONSE, QUERY>(
       url: string,
       options?: TypableApiMethodOptions<QUERY>
-    ): Promise<
-      ResponseEnvelopes.Envelope<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>
-    > => {
-      return handleAxiosResponse<PROBLEM_DETAIL_SUPER_TYPE, RESPONSE>(
+    ): Promise<ResponseEnvelopes.SuccessEnvelope<RESPONSE>> => {
+      return handleAxiosResponse<RESPONSE>(
         axios.delete<RESPONSE>(url, {
           ...options?.config,
           params: options?.query,
@@ -157,22 +147,13 @@ export function createTypedAxiosVerbs<
   };
 }
 
-function handleAxiosResponse<
-  PROBLEM_DETAIL extends ProblemDetails.ProblemDetail<STATUS, TYPE, PAYLOAD>,
-  RESPONSE,
-  STATUS extends number = PROBLEM_DETAIL["status"],
-  TYPE extends string = PROBLEM_DETAIL["type"],
-  PAYLOAD = PROBLEM_DETAIL["payload"]
->(
+function handleAxiosResponse<RESPONSE>(
   axiosPromise: Promise<AxiosResponse<RESPONSE>>
-): Promise<ResponseEnvelopes.Envelope<PROBLEM_DETAIL, RESPONSE>> {
+): Promise<ResponseEnvelopes.SuccessEnvelope<RESPONSE>> {
   return axiosPromise
     .then((response) => {
       if (ResponseEnvelopes.isOne(response.data)) {
-        return response.data as ResponseEnvelopes.Envelope<
-          PROBLEM_DETAIL,
-          RESPONSE
-        >;
+        return response.data as ResponseEnvelopes.SuccessEnvelope<RESPONSE>;
       }
 
       return Promise.reject(
