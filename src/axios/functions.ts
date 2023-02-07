@@ -40,11 +40,11 @@ function createTypedCreateProblemDetailHandler<
   const handleProblemDetail =
     createTypedHandleProblemDetail<PROBLEM_DETAIL_SUPER_TYPE>();
 
-  return function (
-    handler: (problemDetail: PROBLEM_DETAIL_SUPER_TYPE) => void | Promise<void>
-  ) {
+  return function <RESULT>(
+    handler: (problemDetail: PROBLEM_DETAIL_SUPER_TYPE) => RESULT
+  ): (reason: any) => RESULT {
     return function (reason: any) {
-      return handleProblemDetail(reason, handler);
+      return handleProblemDetail<RESULT>(reason, handler);
     };
   };
 }
@@ -59,15 +59,15 @@ export function createTypedHandleProblemDetail<
   SUPER_TYPE extends string = PROBLEM_DETAIL_SUPER_TYPE["type"],
   SUPER_PAYLOAD = PROBLEM_DETAIL_SUPER_TYPE["payload"]
 >() {
-  return function (
+  return function <RESULT>(
     reason: any,
-    handler: (problemDetail: PROBLEM_DETAIL_SUPER_TYPE) => void | Promise<void>
-  ) {
+    handler: (problemDetail: PROBLEM_DETAIL_SUPER_TYPE) => RESULT
+  ): RESULT {
     if (ProblemDetails.isOne(reason)) {
       return handler(reason as PROBLEM_DETAIL_SUPER_TYPE);
     }
 
-    return Promise.reject(reason);
+    throw reason;
   };
 }
 
