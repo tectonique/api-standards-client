@@ -53,19 +53,18 @@ When you have
 - and this library installed
 you can create e.g. fully typed axios instances with error/Problem Detail handling!
 
-You want to perform such API calls:
+You want to perform such 100% type safe API calls:
 ```typescript
 const createUserEnvelope = await MyApi.createUser(
   "theo@testing.com",
   "Theo Tester"
-);
+).catch(createProblemDetailHandler(pd => {
+  if (createUserEnvelope.type === "response-not-an-envelope") {
+    alert("Response is not an envelope!");
+  }
+}));
 
-if (createUserEnvelope.success) {
-  console.log("User id: ", createUserEnvelope.payload.id);
-
-} else if (createUserEnvelope.type === "response-not-an-envelope") {
-  throw new Error("Response is not an envelope!");
-}
+console.log("User id: ", createUserEnvelope.payload.id);
 ```
 
 # 📑 Documentation
@@ -81,7 +80,7 @@ Here is an example:
 ```typescript
 import axios from "axios";
 import { ProblemDetailSuperType } from "@backend/ProblemDetailSuperType"
-import { makeAxiosTypeSafe, ClientProblemDetailSuperType } from "@tectonique/api-standards-client";
+import { createTypeSafeAxios, ClientProblemDetailSuperType } from "@tectonique/api-standards-client";
 
 type Create_User_Body = {
   email: string;
@@ -92,11 +91,15 @@ type Create_User_Response = {
   id: string;
 };
 
-const typableAxios = makeAxiosTypeSafe<ProblemDetailSuperType | ClientProblemDetailSuperType>(axios);
+const {
+  verbs,
+  createProblemDetailHandler,
+  handleProblemDetail
+} = createTypeSafeAxios<ProblemDetailSuperType | ClientProblemDetailSuperType>(axios);
 
 const MyApi = {
   createUser: (email: string, name: string) =>
-    typableAxios.post<Create_User_Response, Create_User_Body, undefined>(
+    verbs.post<Create_User_Response, Create_User_Body, undefined>(
       "/users",
       { email, name }
     ),
@@ -105,13 +108,29 @@ const MyApi = {
 const createUserEnvelope = await MyApi.createUser(
   "theo@testing.com",
   "Theo Tester"
-);
+).catch(createProblemDetailHandler(pd => {
+  if (createUserEnvelope.type === "response-not-an-envelope") {
+    alert("Response is not an envelope!");
+  }
+}));
 
-if (createUserEnvelope.success) {
+console.log("User id: ", createUserEnvelope.payload.id);
+
+// OR wit try catch + await
+try {
+  const createUserEnvelope = await MyApi.createUser(
+    "theo@testing.com",
+    "Theo Tester"
+  )
+
   console.log("User id: ", createUserEnvelope.payload.id);
-  
-} else if (createUserEnvelope.type === "response-not-an-envelope") {
-  throw new Error("Response is not an envelope!");
+} catch ( error ) {
+  // await is important to catch rethrown non problem detail errors!
+  await handleProblemDetail(error, (pd) => {
+    if (createUserEnvelope.type === "response-not-an-envelope") {
+      alert("Response is not an envelope!");
+    }
+  })  
 }
 ```
 

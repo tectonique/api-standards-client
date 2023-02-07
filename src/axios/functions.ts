@@ -6,7 +6,72 @@ import { ClientProblemDetailsCollection } from "../ClientProblemDetails";
 const { ClientSideInternalProblemDetail, ResponseNotAnEnvelopeProblemDetail } =
   ClientProblemDetailsCollection;
 
-export function makeAxiosTypeSafe<
+export function createTypeSafeAxios<
+  PROBLEM_DETAIL_SUPER_TYPE extends ProblemDetails.ProblemDetail<
+    SUPER_STATUS,
+    SUPER_TYPE,
+    SUPER_PAYLOAD
+  >,
+  SUPER_STATUS extends number = PROBLEM_DETAIL_SUPER_TYPE["status"],
+  SUPER_TYPE extends string = PROBLEM_DETAIL_SUPER_TYPE["type"],
+  SUPER_PAYLOAD = PROBLEM_DETAIL_SUPER_TYPE["payload"]
+>(axios: AxiosInstance) {
+  return {
+    verbs: createTypedAxiosVerbs<PROBLEM_DETAIL_SUPER_TYPE>(axios),
+
+    createProblemDetailHandler:
+      createTypedCreateProblemDetailHandler<PROBLEM_DETAIL_SUPER_TYPE>(),
+
+    handleProblemDetail:
+      createTypedHandleProblemDetail<PROBLEM_DETAIL_SUPER_TYPE>(),
+  };
+}
+
+function createTypedCreateProblemDetailHandler<
+  PROBLEM_DETAIL_SUPER_TYPE extends ProblemDetails.ProblemDetail<
+    SUPER_STATUS,
+    SUPER_TYPE,
+    SUPER_PAYLOAD
+  >,
+  SUPER_STATUS extends number = PROBLEM_DETAIL_SUPER_TYPE["status"],
+  SUPER_TYPE extends string = PROBLEM_DETAIL_SUPER_TYPE["type"],
+  SUPER_PAYLOAD = PROBLEM_DETAIL_SUPER_TYPE["payload"]
+>() {
+  const handleProblemDetail =
+    createTypedHandleProblemDetail<PROBLEM_DETAIL_SUPER_TYPE>();
+
+  return function (
+    handler: (problemDetail: PROBLEM_DETAIL_SUPER_TYPE) => void | Promise<void>
+  ) {
+    return function (reason: any) {
+      return handleProblemDetail(reason, handler);
+    };
+  };
+}
+
+export function createTypedHandleProblemDetail<
+  PROBLEM_DETAIL_SUPER_TYPE extends ProblemDetails.ProblemDetail<
+    SUPER_STATUS,
+    SUPER_TYPE,
+    SUPER_PAYLOAD
+  >,
+  SUPER_STATUS extends number = PROBLEM_DETAIL_SUPER_TYPE["status"],
+  SUPER_TYPE extends string = PROBLEM_DETAIL_SUPER_TYPE["type"],
+  SUPER_PAYLOAD = PROBLEM_DETAIL_SUPER_TYPE["payload"]
+>() {
+  return function (
+    reason: any,
+    handler: (problemDetail: PROBLEM_DETAIL_SUPER_TYPE) => void | Promise<void>
+  ) {
+    if (ProblemDetails.isOne(reason)) {
+      return handler(reason as PROBLEM_DETAIL_SUPER_TYPE);
+    }
+
+    return Promise.reject(reason);
+  };
+}
+
+export function createTypedAxiosVerbs<
   PROBLEM_DETAIL_SUPER_TYPE extends ProblemDetails.ProblemDetail<
     SUPER_STATUS,
     SUPER_TYPE,
@@ -103,26 +168,30 @@ function handleAxiosResponse<
 ): Promise<ResponseEnvelopes.Envelope<PROBLEM_DETAIL, RESPONSE>> {
   return axiosPromise
     .then((response) => {
-      const isEnvelope = ResponseEnvelopes.isOne(response.data);
-      if (isEnvelope) {
+      if (ResponseEnvelopes.isOne(response.data)) {
         return response.data as ResponseEnvelopes.Envelope<
           PROBLEM_DETAIL,
           RESPONSE
         >;
       }
 
-      return ResponseNotAnEnvelopeProblemDetail({
-        payload: response.data,
-      }) as PROBLEM_DETAIL;
+      return Promise.reject(
+        ResponseNotAnEnvelopeProblemDetail({
+          payload: response.data,
+        })
+      );
     })
     .catch((reason) => {
       if (ProblemDetails.isOne(reason?.response?.data)) {
-        return reason.response.data as PROBLEM_DETAIL;
+        return Promise.reject(reason);
       }
 
-      return ClientSideInternalProblemDetail({
-        detail: reason?.message,
-        payload: reason,
-      }) as PROBLEM_DETAIL;
+      // All other errors get wrapped
+      return Promise.reject(
+        ClientSideInternalProblemDetail({
+          detail: reason?.message,
+          payload: reason,
+        })
+      );
     });
 }
