@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosResponse } from "axios";
+import { AxiosError, AxiosInstance, AxiosResponse, isAxiosError } from "axios";
 import { TypableApiMethodOptions } from "./types";
 import { ProblemDetails, ResponseEnvelopes } from "@tectonique/api-standards";
 import { ClientProblemDetailsCollection } from "../ClientProblemDetails";
@@ -65,6 +65,13 @@ export function createTypedHandleProblemDetail<
   ): RESULT {
     if (ProblemDetails.isOne(reason)) {
       return handler(reason as PROBLEM_DETAIL_SUPER_TYPE);
+    } else if (
+      isAxiosError(reason) &&
+      ProblemDetails.isOne((reason as AxiosError).response?.data)
+    ) {
+      return handler(
+        (reason as AxiosError).response?.data as PROBLEM_DETAIL_SUPER_TYPE
+      );
     }
 
     throw reason;
