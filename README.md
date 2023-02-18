@@ -10,6 +10,15 @@
   <br>
 </p>
 
+<hr>
+
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@tectonique/api-standards">
+    <img alt="npm" src="https://img.shields.io/npm/v/@tectonique/api-standards-client?color=%23e62770&label=NPM">
+  </a>
+</p>
+
 # 🌩 API Standards – Client
 This library is based on [tectonique/api-standards 🔗](https://github.com/tectonique/api-standards).
 

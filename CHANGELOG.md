@@ -6,6 +6,7 @@
 * [📜 Changelog](#-changelog)
 * [📖 Table of contents](#-table-of-contents)
 * [0.x.y](#0xy)
+  * [0.0.10](#0010)
   * [0.0.9](#009)
   * [0.0.8](#008)
   * [0.0.7](#007)
@@ -18,6 +19,9 @@
 <!-- TOC -->
 
 # 0.x.y
+
+## 0.0.10
+- NPM badge
 
 ## 0.0.9
 - Bumped version of `@tectonique/api-standards` to `^1.0.0`
