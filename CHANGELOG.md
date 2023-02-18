@@ -6,6 +6,7 @@
 * [📜 Changelog](#-changelog)
 * [📖 Table of contents](#-table-of-contents)
 * [0.x.y](#0xy)
+  * [0.0.9](#009)
   * [0.0.8](#008)
   * [0.0.7](#007)
   * [0.0.6](#006)
@@ -17,6 +18,10 @@
 <!-- TOC -->
 
 # 0.x.y
+
+## 0.0.9
+- Bumped version of `@tectonique/api-standards` to `^1.0.0`
+- `prepublishOnly` script
 
 ## 0.0.8
 - Correctly handle problem details in axios error response data.
@@ -40,7 +45,7 @@
 - Extract client problem details into sub folder as it will later be shared with other adapters as well..
 
 ## 0.0.2
-- Published dist/ build.y
+- Published dist/
 
 ## 0.0.1
 - Initial release.

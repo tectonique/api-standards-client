@@ -16,7 +16,7 @@
     "name": "Peter Kuhmann",
     "email": "peter@hedgehogs-mind.com"
   },
-  "version": "0.0.8",
+  "version": "0.0.9",
   "publishConfig": {
     "access": "public"
   },
@@ -35,7 +35,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh",
-    "dev": "tsx demo.ts"
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.0.0",
@@ -53,7 +53,7 @@
     "typescript": "*"
   },
   "dependencies": {
-    "@tectonique/api-standards": "^0.0.13"
+    "@tectonique/api-standards": "^1.0.0"
   },
   "peerDependencies": {
     "axios": ">= 1.0.0"
